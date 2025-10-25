@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriPal+ | Your Personal Nutrition Advisor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --secondary: #3b82f6;
+            --accent: #f59e0b;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --gray: #6b7280;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation */
+        nav {
+            background: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Hero/About Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5rem 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            line-height: 1.8;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Section Styles */
+        section {
+            padding: 4rem 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--gray);
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            font-size: 1.1rem;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: var(--gray);
+            line-height: 1.6;
+        }
+
+        /* How It Works */
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .step {
+            text-align: center;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            background: var(--light);
+        }
+
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .plan-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: transform 0.3s;
+            border: 3px solid transparent;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .plan-card.featured {
+            border-color: var(--primary);
+            position: relative;
+        }
+
+        .featured-badge {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .plan-name {
+            font-size: 1.5rem;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+
+        .plan-price {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-price span {
+            font-size: 1.2rem;
+            color: var(--gray);
+        }
+
+        .plan-features {
+            list-style: none;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .plan-features li {
+            padding: 0.75rem 0;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .plan-features li:before {
+            content: '✓';
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Rewards Section */
+        .rewards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .reward-card {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .reward-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .reward-points {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Sign In Cards */
+        .signin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+        }
+
+        .signin-card {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .signin-card h3 {
+            color: var(--dark);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .signin-icon {
+            font-size: 4rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-link {
+            text-align: center;
+            margin-top: 1rem;
+            color: var(--gray);
+        }
+
+        .form-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .signin-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <div class="logo">
+                🥗 NutriPal+
+            </div>
+            <ul class="nav-links">
+                <li><a href="#about">About</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#signin">Sign In</a></li>
+            </ul>
+            <a href="#signin" class="btn btn-primary">Get Started</a>
+        </div>
+    </nav>
+
+    <!-- Hero/About Section -->
+    <section class="hero" id="about">
+        <div class="container">
+            <h1>🥗 Welcome to NutriPal+</h1>
+            <p>NutriPal+ is your hyper-personalized diet and nutrition advisor that combines cutting-edge AI technology with expert nutritional guidance. We understand that every body is unique, and generic diet plans simply don't work. That's why we've created an intelligent platform that learns from you, adapts to your lifestyle, and helps you achieve your health goals sustainably.</p>
+            <p>Say goodbye to confusion, wasted money on unnecessary supplements, and one-size-fits-all diet plans. With NutriPal+, you get a personalized nutrition coach, AI-powered meal planning, real-time health tracking, and a supportive community—all in one place.</p>
+            <div class="hero-buttons">
+                <a href="#signin" class="btn btn-primary" style="background: white; color: var(--primary);">Start Your Journey</a>
+                <a href="#features" class="btn btn-secondary" style="border-color: white; color: white;">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features">
+        <div class="container">
+            <h2 class="section-title">Our Innovative Features</h2>
+            <p class="section-subtitle">Everything you need for a healthier lifestyle in one intelligent platform</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Personalized Health Report</h3>
+                    <p>Comprehensive health assessment capturing your unique dietary preferences, lifestyle, and goals.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👤</div>
+                    <h3>AI Body Twin</h3>
+                    <p>Digital twin technology that learns your metabolism and predicts how foods affect you.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3>AI Chat Coach</h3>
+                    <p>24/7 intelligent nutrition assistant for instant answers and personalized guidance.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔥</div>
+                    <h3>Health Streaks</h3>
+                    <p>Stay motivated with daily streaks, badges, and rewards for consistent healthy habits.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⌚</div>
+                    <h3>Wearable Sync</h3>
+                    <p>Connect smartwatches and fitness trackers for real-time health monitoring.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3>Community Forum</h3>
+                    <p>Connect with others, share recipes, and celebrate health milestones together.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⏰</div>
+                    <h3>Smart Reminders</h3>
+                    <p>Never miss supplements with intelligent, adaptive notifications.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Previous Supplement Report</h3>
+                    <p>Track and analyze your supplement intake history with detailed analytics.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🩺</div>
+                    <h3>Expert Consultation</h3>
+                    <p>Direct access to certified nutritionists and health specialists.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" style="background: var(--light);">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">Get started in just 4 simple steps</p>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Sign Up</h3>
+                    <p>Create your account and complete our comprehensive health quiz</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>AI Analysis</h3>
+                    <p>Our AI creates your digital body twin and generates personalized recommendations</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Follow Your Plan</h3>
+                    <p>Get daily supplement reminders, fitness tracking, and coaching support</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Track Progress</h3>
+                    <p>Monitor your health journey with streaks, rewards, and real-time insights</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <h2 class="section-title">Choose Your Plan</h2>
+            <p class="section-subtitle">Flexible pricing to match your health goals</p>
+            <div class="plans-grid">
+                <div class="plan-card">
+                    <h3 class="plan-name">Basic</h3>
+                    <div class="plan-price">Free</div>
+                    <ul class="plan-features">
+                        <li>Basic supplement tracking</li>
+                        <li>Health quiz & profile</li>
+                        <li>AI chat coach (5 msgs/day)</li>
+                        <li>Community forum access</li>
+                        <li>Daily supplement reminders</li>
+                    </ul>
+                    <button class="btn btn-secondary" style="width: 100%;">Get Started</button>
+                </div>
+                
+                <div class="plan-card featured">
+                    <div class="featured-badge">MOST POPULAR</div>
+                    <h3 class="plan-name">Pro</h3>
+                    <div class="plan-price">₹200<span>/month</span></div>
+                    <ul class="plan-features">
+                        <li>Everything in Basic</li>
+                        <li>AI Body Twin technology</li>
+                        <li>Unlimited AI coaching</li>
+                        <li>Wearable integration</li>
+                        <li>Advanced analytics</li>
+                        <li>Doctor consultations (2/month)</li>
+                        <li>Personalized supplements</li>
+                        <li>Priority support</li>
+                        <li>Previous supplement reports</li>
+                    </ul>
+                    <button class="btn btn-primary" style="width: 100%;">Upgrade Now</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rewards Section -->
+    <section id="rewards">
+        <div class="container">
+            <h2 class="section-title">Earn Rewards & Points</h2>
+            <p class="section-subtitle">Stay motivated and unlock exclusive benefits</p>
+            <div class="rewards-grid">
+                <div class="reward-card">
+                    <div class="reward-icon">🔥</div>
+                    <div class="reward-points">100 pts</div>
+                    <h4>7-Day Fitness Streak</h4>
+                    <p>Complete workouts for 7 days straight</p>
+                </div>
+                <div class="reward-card">
+                    <div class="reward-icon">💪</div>
+                    <div class="reward-points">250 pts</div>
+                    <h4>Fitness Goal</h4>
+                    <p>Hit your weekly exercise target</p>
+                </div>
+                <div class="reward-card">
+                    <div class="reward-icon">💊</div>
+                    <div class="reward-points">150 pts</div>
+                    <h4>Supplement Logger</h4>
+                    <p>Log all supplements for 5 days</p>
+                </div>
+                <div class="reward-card">
+                    <div class="reward-icon">👥</div>
+                    <div class="reward-points">200 pts</div>
+                    <h4>Community Star</h4>
+                    <p>Help 10 community members</p>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
+                <h3 style="color: var(--dark); margin-bottom: 1rem;">Redeem Your Points</h3>
+                <p style="color: var(--gray); margin-bottom: 1.5rem;">Exchange points for discounts, free consultations, premium features, and exclusive merchandise</p>
+                <button class="btn btn-primary">View Rewards Store</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sign In Section -->
+    <section id="signin" style="background: var(--light);">
+        <div class="container">
+            <h2 class="section-title">Join NutriPal+ Today</h2>
+            <p class="section-subtitle">Choose your account type and start your health journey</p>
+            <div class="signin-grid">
+                <!-- Client Sign In -->
+                <div class="signin-card">
+                    <div class="signin-icon">👤</div>
+                    <h3>Client Sign In</h3>
+                    <form>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" placeholder="Enter your name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" placeholder="your@email.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" placeholder="Create a secure password" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Health Goal</label>
+                            <select required>
+                                <option value="">Select your goal</option>
+                                <option>Weight Loss</option>
+                                <option>Muscle Gain</option>
+                                <option>Better Energy</option>
+                                <option>Disease Management</option>
+                                <option>General Wellness</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+                        <div class="form-link">
+                            Already have an account? <a href="#">Log In</a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Doctor Sign In -->
+                <div class="signin-card">
+                    <div class="signin-icon">🩺</div>
+                    <h3>Health Professional Sign In</h3>
+                    <form>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" placeholder="Dr. Your Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" placeholder="doctor@email.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" placeholder="Create a secure password" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Specialization</label>
+                            <select required>
+                                <option value="">Select specialization</option>
+                                <option>Nutritionist</option>
+                                <option>Dietitian</option>
+                                <option>Fitness Trainer</option>
+                                <option>Wellness Coach</option>
+                                <option>General Physician</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>License Number</label>
+                            <input type="text" placeholder="Your medical license number" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Register as Professional</button>
+                        <div class="form-link">
+                            Already registered? <a href="#">Log In</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 NutriPal+. All rights reserved.</p>
+            <p style="margin-top: 0.5rem; color: var(--gray);">Your personal AI-powered nutrition advisor</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Form submissions
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Thank you for signing up! Your account is being created.');
+            });
+        });
+    </script>
+</body>
+</html>
