@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriPal+ | Wearable Sync</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .pulse-ring {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 1; }
+            70% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(0.8); opacity: 1; }
+        }
+        .data-stream {
+            border-left: 3px solid #10b981;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl">🥗</span>
+                <span class="text-xl font-bold text-green-600">NutriPal+ Wearable Sync</span>
+            </div>
+            <div class="flex space-x-4">
+                <a href="/" class="text-gray-600 hover:text-green-600 font-medium">Health Report</a>
+                <a href="/wearable-sync" class="text-green-600 font-medium border-b-2 border-green-600">Wearable Sync</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-6xl mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-10">
+                <h1 class="text-4xl font-bold text-gray-800 mb-4">Wearable Device Sync</h1>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Connect your wearable devices to sync real-time health data with NutriPal+ for personalized insights and recommendations.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left Column - Device Connection -->
+                <div class="lg:col-span-1 space-y-6">
+                    <!-- Device Connection Card -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">Connect Device</h2>
+                        
+                        <!-- Device Selection -->
+                        <div class="mb-6">
+                            <label class="block text-gray-700 font-medium mb-2">Select Your Device</label>
+                            <div class="space-y-3" id="deviceSelection">
+                                <div class="flex items-center p-3 border border-gray-200 rounded-lg hover:border-green-500 cursor-pointer device-option" data-device="apple-watch">
+                                    <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-lg">⌚</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">Apple Watch</p>
+                                        <p class="text-sm text-gray-500">Heart rate, Blood oxygen, ECG</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center p-3 border border-gray-200 rounded-lg hover:border-green-500 cursor-pointer device-option" data-device="fitbit">
+                                    <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-lg">📊</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">Fitbit</p>
+                                        <p class="text-sm text-gray-500">Sleep tracking, Steps, Heart rate</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center p-3 border border-gray-200 rounded-lg hover:border-green-500 cursor-pointer device-option" data-device="samsung-health">
+                                    <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-lg">📱</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">Samsung Health</p>
+                                        <p class="text-sm text-gray-500">Stress, Blood glucose, Activity</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center p-3 border border-gray-200 rounded-lg hover:border-green-500 cursor-pointer device-option" data-device="generic">
+                                    <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-lg">💪</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">Generic Tracker</p>
+                                        <p class="text-sm text-gray-500">Basic fitness metrics</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Connection Status -->
+                        <div id="connectionStatus" class="hidden">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center">
+                                    <div id="statusIndicator" class="w-3 h-3 bg-red-500 rounded-full mr-2 pulse-ring"></div>
+                                    <span id="statusText" class="font-medium">Disconnected</span>
+                                </div>
+                                <button id="disconnectBtn" class="text-red-600 hover:text-red-700 text-sm font-medium hidden">
+                                    Disconnect
+                                </button>
+                            </div>
+                            
+                            <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm text-gray-600">Device</span>
+                                    <span id="connectedDevice" class="font-medium">-</span>
+                                </div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm text-gray-600">Last Sync</span>
+                                    <span id="lastSync" class="font-medium">-</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">Data Points</span>
+                                    <span id="dataPoints" class="font-medium">0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Connection Controls -->
+                        <div class="space-y-3">
+                            <button id="connectBtn" class="w-full bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
+                                Connect Device
+                            </button>
+                            <button id="syncBtn" class="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors hidden">
+                                Start Real-time Sync
+                            </button>
+                            <button id="stopSyncBtn" class="w-full bg-gray-600 text-white py-3 rounded-lg font-medium hover:bg-gray-700 transition-colors hidden">
+                                Stop Sync
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Health Insights -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">Health Insights</h2>
+                        <div id="insightsContainer" class="space-y-3">
+                            <div class="text-center text-gray-500 py-8">
+                                <p>Connect a device to see health insights</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - Data Visualization -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Real-time Data Stream -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800">Real-time Data Stream</h2>
+                            <div class="flex items-center space-x-2">
+                                <div id="streamStatus" class="flex items-center">
+                                    <div class="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
+                                    <span class="text-sm text-gray-600">Not streaming</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                            <!-- Heart Rate -->
+                            <div class="bg-red-50 p-4 rounded-lg">
+                                <div class="flex justify-between items-start mb-2">
+                                    <span class="text-red-700 font-medium">Heart Rate</span>
+                                    <span class="text-red-700 text-lg font-bold" id="heartRateValue">--</span>
+                                </div>
+                                <p class="text-red-600 text-sm">BPM</p>
+                                <div class="mt-2 text-xs text-red-500" id="heartRateStatus">No data</div>
+                            </div>
+                            
+                            <!-- Blood Oxygen -->
+                            <div class="bg-blue-50 p-4 rounded-lg">
+                                <div class="flex justify-between items-start mb-2">
+                                    <span class="text-blue-700 font-medium">Blood Oxygen</span>
+                                    <span class="text-blue-700 text-lg font-bold" id="bloodOxygenValue">--</span>
+                                </div>
+                                <p class="text-blue-600 text-sm">% SpO₂</p>
+                                <div class="mt-2 text-xs text-blue-500" id="bloodOxygenStatus">No data</div>
+                            </div>
+                            
+                            <!-- Steps -->
+                            <div class="bg-green-50 p-4 rounded-lg">
+                                <div class="flex justify-between items-start mb-2">
+                                    <span class="text-green-700 font-medium">Steps</span>
+                                    <span class="text-green-700 text-lg font-bold" id="stepsValue">--</span>
+                                </div>
+                                <p class="text-green-600 text-sm">Today</p>
+                                <div class="mt-2 text-xs text-green-500" id="stepsStatus">No data</div>
+                            </div>
+                        </div>
+
+                        <!-- Data Log -->
+                        <div class="border border-gray-200 rounded-lg">
+                            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                                <h3 class="font-medium text-gray-700">Live Data Feed</h3>
+                            </div>
+                            <div id="dataStream" class="max-h-64 overflow-y-auto p-4 space-y-2">
+                                <div class="text-center text-gray-500 py-4">
+                                    <p>Waiting for data stream...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Historical Data -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6">Historical Data</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Statistics -->
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <h3 class="font-medium text-gray-700 mb-3">Today's Statistics</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Total Steps</span>
+                                        <span class="font-medium" id="totalSteps">0</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Calories Burned</span>
+                                        <span class="font-medium" id="totalCalories">0</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Avg Heart Rate</span>
+                                        <span class="font-medium" id="avgHeartRate">--</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Active Minutes</span>
+                                        <span class="font-medium" id="activeMinutes">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Export Options -->
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <h3 class="font-medium text-gray-700 mb-3">Data Management</h3>
+                                <div class="space-y-3">
+                                    <button id="exportDataBtn" class="w-full bg-gray-600 text-white py-2 rounded-lg font-medium hover:bg-gray-700 transition-colors">
+                                        Export Health Data
+                                    </button>
+                                    <button id="viewReportBtn" class="w-full bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700 transition-colors">
+                                        Generate Health Report
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-16 transition-transform duration-300 hidden">
+        <div class="flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span id="toastMessage">Device connected successfully!</span>
+        </div>
+    </div>
+
+    <script src="wearable-script.js"></script>
+</body>
+</html>
